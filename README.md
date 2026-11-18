@@ -6,7 +6,7 @@
 ## 1. Project Overview & Course Details
 
 * **Project Title:** Synthetic Time-Series Generation for Household Power Consumption Using TimeGAN
-* **Course:** Generative Artificial Intelligence Capstone Project
+
 
 ---
 
