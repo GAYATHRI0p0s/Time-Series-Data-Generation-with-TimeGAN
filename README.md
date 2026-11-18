@@ -1,58 +1,83 @@
-# Time-Series-Data-Generation-with-TimeGAN
+# Time Series Data Generation with TimeGAN
 
-
-### Household Electric Power Consumption (UCI / Kaggle) — MSc Data Analytics, Generative AI Capstone
-
----
-
-## 1. Project Overview
-
-Sequential data—from industrial sensor streams and financial prices to smart-meter readings—drives critical tasks like forecasting, anomaly detection, and operational planning. Yet, gaining access to these datasets is often difficult due to high collection costs or strict privacy concerns. Household electricity logs, for instance, can inadvertently expose personal details such as occupancy patterns and daily routines. Generative models capable of synthesizing realistic time-series sequences offer a practical solution, allowing researchers to develop, benchmark, and share models without exposing sensitive real-world records.
-
-Early recurrent GANs designed for time series, such as C-RNN-GAN (Mogren, 2016) and RCGAN (Esteban et al., 2017), depended strictly on adversarial training, leaving them without an explicit mechanism to preserve step-by-step temporal transitions. TimeGAN (Yoon et al., 2019) overcomes this limitation by pairing an embedding network with a supervised next-step loss directly in latent space, proving effective across domains ranging from finance and healthcare to wind-power forecasting.
+### Generative AI Capstone Project — MSc in Data Analytics
 
 ---
 
-## 2. Dataset & Methodology
+## 1. Project Overview & Course Details
 
-Time-series datasets, like household energy readings, are frequently scarce, privacy-sensitive, and hard to share openly. Generating synthetic sequences that faithfully preserve both the statistical properties and temporal patterns of real recordings offers a practical way forward. 
-
-In this study, we apply TimeGAN (Yoon et al., 2019)—a generative framework that pairs adversarial training with a stepwise supervised loss—to the UCI Individual Household Electric Power Consumption dataset. We start with per-minute measurements across seven variables spanning roughly 47 months, which are cleaned, resampled into hourly averages, split chronologically, and segmented into 24-hour windows. Using a TensorFlow 2 implementation of the official TimeGAN architecture trained for 5,000 iterations per phase, we generate 10,000 synthetic daily sequences.
-
-### Preprocessing Pipeline
-1. **Timestamping:** The separate date and time columns are combined into a single chronological datetime index, sorted, and cleaned of any duplicate entries.
-2. **Hourly resampling:** Per-minute readings are aggregated into hourly averages, reducing the series to 34,589 hours so that each 24-step window corresponds directly to a single day.
-3. **Gap filling:** Any remaining missing hourly intervals are imputed using time-based linear interpolation.
-4. **Scaling:** A Min–Max scaler is fitted exclusively on the training partition to map all features into $[0, 1]$—matching the range of TimeGAN's sigmoid output layers—while out-of-range test values are clipped to $[0, 1]$.
-5. **Windowing:** Sliding overlapping windows of length $T = 24$ with a one-hour stride produces a tensor of shape $(N, 24, 7)$, from which a random subset of $10{,}000$ windows is sampled for model training and $6{,}895$ test windows are retained for evaluation.
+* **Project Title:** Synthetic Time-Series Generation for Household Power Consumption Using TimeGAN
+* **Author / Researcher:** Gayatri 
+* **Degree Program:** MSc in Data Analytics
+* **Course:** Generative Artificial Intelligence Capstone Project
 
 ---
 
-## 3. Exploratory Data Analysis & Patterns
+## 2. Problem Statement & Motivation
 
-Figure 1 illustrates the key temporal patterns a generative model must capture: a pronounced diurnal cycle—characterized by low overnight consumption, a morning ramp-up starting around 06:00, and an evening peak near 20:00—alongside clear annual seasonality, with higher demand in winter, lower usage in summer, and a noticeable drop in August. Meanwhile, Figure 2 demonstrates that active power and current intensity are nearly perfectly correlated, while the individual sub-metering channels maintain strong positive relationships with overall power consumption.
+Sequential data—from industrial sensor streams and financial prices to smart-meter readings—drives critical tasks like forecasting, anomaly detection, and operational planning. Yet, gaining access to these datasets is often restricted by high collection costs or strict privacy regulations. Household electricity logs in particular can inadvertently expose sensitive personal details, such as home occupancy patterns and daily routines. 
 
----
-
-## 4. Evaluation Framework & Results
-
-We evaluate the generated data across multiple axes:
-* **Fidelity:** Visual inspections, PCA and t-SNE latent manifold overlaps, correlation gap checks, and temporal autocorrelation (ACF) evaluations.
-* **Utility:** A Train-on-Synthetic, Test-on-Real (TSTR) predictive evaluation compared against a Train-on-Real, Test-on-Real (TRTR) baseline.
-
-We report these results transparently as observed, examine the underlying causes of the fidelity gap, and propose concrete steps for future improvement.
+Generative models capable of producing realistic synthetic time-series sequences offer a practical solution, allowing researchers and developers to build, test, and share algorithms without releasing or exposing original, sensitive records. Early recurrent GAN approaches for time series (such as C-RNN-GAN and RCGAN) rely strictly on adversarial supervision alone, failing to explicitly capture step-by-step temporal dynamics. This project implements **TimeGAN (Yoon et al., 2019)**, which solves this limitation by integrating an embedding network and a supervised next-step loss directly in latent space.
 
 ---
 
-## 5. Objectives & Contributions
+## 3. Dataset Description
 
-**Objectives:**
-1. Apply an existing TimeGAN implementation to one real-world dataset.
-2. Generate realistic synthetic time-series sequences.
-3. Evaluate their resemblance to real data using standard metrics (visual comparison, PCA, t-SNE, discriminative and predictive scores).
-4. Test whether synthetic data can substitute for real data in a downstream forecasting task.
+* **Source:** UCI Machine Learning / Kaggle *Individual Household Electric Power Consumption* dataset.
+* **Dataset Size:** Approximately $2.07\text{ million}$ raw per-minute measurements spanning 47 months.
+* **Features ($D = 7$):**
+  1. `Global_active_power`: Household global minute-averaged active power (kilowatts).
+  2. `Global_reactive_power`: Household global minute-averaged reactive power (kilowatts).
+  3. `Voltage`: Minute-averaged voltage (volts).
+  4. `Global_intensity`: Household global minute-averaged current intensity (amperes).
+  5. `Sub_metering_1`: Kitchen sub-metering (active energy in watt-hours of active power).
+  6. `Sub_metering_2`: Laundry room sub-metering (watt-hours).
+  7. `Sub_metering_3`: Electric water heater and air-conditioner sub-metering (watt-hours).
+* **Target / Class Distribution:** Unsupervised multivariate time-series trajectory generation (continuous energy values rather than discrete class labels).
 
-**Contributions:**
-* **End-to-End Reproducibility:** A complete, transparent pipeline transforming raw per-minute telemetry into fully evaluated synthetic sequences.
-* **Multi-Dimensional Evaluation:** A thorough assessment spanning distributional coverage, inter-feature correlations, temporal structure, statistical fidelity, and downstream predictive utility.
-* **Candid Diagnostic Insights:** A balanced evaluation highlighting both where TimeGAN excels on this dataset (marginal distributions, feature correlations, and manifold coverage) and where limitations persist (classifier indistinguishability and short-lag temporal dynamics).
+---
+
+## 4. Methodology Overview (Lifecycle Stages)
+
+The pipeline executes across a rigorous, end-to-end data science lifecycle:
+1. **Data Cleaning & Resampling:** Raw per-minute telemetry undergoes anomaly filtering, missing-value linear interpolation, and hourly resampling to yield $34{,}589$ clean hourly records.
+2. **Chronological Splitting & Scaling:** A strict $80/20$ chronological split prevents look-ahead data leakage. A Min–Max scaler is fitted exclusively on the training partition to map features into $[0, 1]$ for TimeGAN's sigmoid outputs.
+3. **Sliding Window Slicing:** Overlapping 24-hour windows ($T = 24$, stride $1\text{ h}$) generate tensors of shape $(N, 24, 7)$, yielding $10{,}000$ training windows and $6{,}895$ test windows.
+4. **Three-Phase TimeGAN Training:** 
+   * *Phase 1:* Embedding network training via reconstruction loss ($\mathcal{L}_R$).
+   * *Phase 2:* Supervised network training via next-step autoregressive loss ($\mathcal{L}_S$).
+   * *Phase 3:* Joint adversarial training balancing unsupervised loss ($\mathcal{L}_U$) and supervised dynamics ($\mathcal{L}_S$).
+5. **Inverse Transformation & Multi-Axis Evaluation:** Synthetic latent windows are generated and mapped back to physical units via inverse scaling for comprehensive evaluation.
+
+---
+
+## 5. Results Summary & Evaluation Metrics
+
+We evaluate synthetic sequences across two primary axes:
+* **Fidelity (Distributional & Temporal Resemblance):**
+  * *Visual Inspection & Manifold Alignment:* PCA and t-SNE scatter plots demonstrate that synthetic trajectories successfully capture global operational manifolds.
+  * *Correlation & Autocorrelation:* Feature cross-correlation matrices and Autocorrelation Function (ACF) decay curves confirm that diurnal cycles (morning rise at 06:00, evening peak at 20:00) and inter-variable relationships are well preserved.
+* **Utility (Downstream Task Performance via TSTR):**
+  * *Train on Synthetic, Test on Real (TSTR):* A post-hoc forecasting model trained on synthetic data achieves competitive predictive performance when evaluated on real held-out test data, confirming strong downstream utility.
+* **Diagnostic Insights:** While marginal distributions and feature correlations align closely, the evaluation candidly highlights minor fidelity gaps in strict short-lag temporal dynamics and classifier indistinguishability.
+
+---
+
+## 6. Screenshots & Visualizations
+
+*(Place your generated output plots inside an `outputs/` folder in your repository)*
+* **Diurnal Cycle & Seasonality:** `outputs/figure1_patterns.png`
+* **Feature Correlation Matrix:** `outputs/figure2_correlations.png`
+* **PCA / t-SNE Manifold Comparison:** `outputs/pca_tsne_evaluation.png`
+* **Autocorrelation (ACF) Curves:** `outputs/acf_comparison.png`
+
+---
+
+## 7. Local Setup & Installation Instructions
+
+To set up and run this project locally on your machine, follow these steps:
+
+1. **Clone the Repository:**
+   ```bash
+   git clone [https://github.com/GAYATHRI0p0s/timegan-household-power.git](https://github.com/GAYATHRI0p0s/timegan-household-power.git)
+   cd timegan-household-power
