@@ -1,0 +1,27 @@
+{
+  "dataset": "Individual household electric power consumption (hourly)",
+  "n_hours": 34589,
+  "seq_len": 24,
+  "features": [
+    "Global_active_power",
+    "Global_reactive_power",
+    "Voltage",
+    "Global_intensity",
+    "Sub_metering_1",
+    "Sub_metering_2",
+    "Sub_metering_3"
+  ],
+  "n_train_windows": 10000,
+  "n_test_windows": 6895,
+  "iterations_per_phase": 5000,
+  "mean_abs_correlation_gap": 0.14708717266862742,
+  "mean_abs_acf_gap": 0.1524259837602494,
+  "discriminative_score_mean": 0.4923132658004761,
+  "discriminative_score_std": 0.002325809836181168,
+  "discriminator_accuracy_mean": 0.9923132658004761,
+  "predictive_mae_kW": {
+    "TRTR": 0.3431024292692779,
+    "TSTR": 0.39840641698202184,
+    "persistence": 0.38118125311276074
+  }
+}
