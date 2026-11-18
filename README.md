@@ -1,14 +1,11 @@
 # Time Series Data Generation with TimeGAN
 
-### Generative AI Capstone Project — MSc in Data Analytics
 
 ---
 
 ## 1. Project Overview & Course Details
 
 * **Project Title:** Synthetic Time-Series Generation for Household Power Consumption Using TimeGAN
-* **Author / Researcher:** Gayatri 
-* **Degree Program:** MSc in Data Analytics
 * **Course:** Generative Artificial Intelligence Capstone Project
 
 ---
