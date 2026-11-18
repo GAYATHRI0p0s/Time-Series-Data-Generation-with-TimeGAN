@@ -70,11 +70,4 @@ We evaluate synthetic sequences across two primary axes:
 
 ---
 
-## 7. Local Setup & Installation Instructions
 
-To set up and run this project locally on your machine, follow these steps:
-
-1. **Clone the Repository:**
-   ```bash
-   git clone [https://github.com/GAYATHRI0p0s/timegan-household-power.git](https://github.com/GAYATHRI0p0s/timegan-household-power.git)
-   cd timegan-household-power
